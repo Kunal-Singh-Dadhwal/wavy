@@ -6,3 +6,10 @@ edition = "2021"
 [dependencies]
 getopts = "*"
 image = { version = "*", default-features = false, features = ["png"] }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
