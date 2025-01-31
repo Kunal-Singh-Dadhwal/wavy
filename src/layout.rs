@@ -2,13 +2,13 @@ use crate::css::{
     Unit::Px,
     Value::{Keyword, Length},
 };
-use crate::style::{Display, StyledNode};
+use crate::style::{Display, StyleNode};
 use std::default::Default;
 
 pub use self::BoxType::{AnonymousBlock, BlockNode, InlineNode};
 
 #[derive(Clone, Copy, Default, Debug)]
-pub struct React {
+pub struct Rect {
     pub x: f32,
     pub y: f32,
     pub width: f32,
@@ -38,8 +38,8 @@ pub struct LayoutBox<'a> {
 }
 
 pub enum BoxType<'a> {
-    BlockNode(&'a StyledNode<'a>),
-    InlineNode(&'a StyledNode<'a>),
+    BlockNode(&'a StyleNode<'a>),
+    InlineNode(&'a StyleNode<'a>),
     AnonymousBlock,
 }
 
@@ -52,7 +52,7 @@ impl<'a> LayoutBox<'a> {
         }
     }
 
-    fn get_style_node(&self) -> &'a StyledNode<'a> {
+    fn get_style_node(&self) -> &'a StyleNode<'a> {
         match self.box_type {
             BlockNode(node) => node,
             InlineNode(node) => node,
@@ -61,7 +61,7 @@ impl<'a> LayoutBox<'a> {
     }
 }
 
-pub fn layout_tree<'a>(node: &'a StyledNode<'a>, containing_block: Dimensions) -> LayoutBox<'a> {
+pub fn layout_tree<'a>(node: &'a StyleNode<'a>, mut containing_block: Dimensions) -> LayoutBox<'a> {
     containing_block.content.height = 0.0;
     let mut root_box = build_layout_tree(node);
     root_box.layout(containing_block);
@@ -104,7 +104,7 @@ impl LayoutBox<'_> {
         self.calculate_block_height();
     }
 
-    fn calculate_block_width(&mut self, calculate_block: Dimensions) {
+    fn calculate_block_width(&mut self, containing_block: Dimensions) {
         let style = self.get_style_node();
 
         let auto = Keyword("auto".to_string());
@@ -233,7 +233,7 @@ impl LayoutBox<'_> {
         }
     }
 
-    fn get_inline_container(&mut self) -> &mut self {
+    fn get_inline_container(&mut self) -> &mut Self {
         match self.box_type {
             InlineNode(_) => self,
             BlockNode(_) => {
@@ -280,5 +280,5 @@ fn sum<I>(iter: I) -> f32
 where
     I: Iterator<Item = f32>,
 {
-    iter.fold(0.0, |a, b| a + b)
+    iter.fold(0., |a: f32, b| a + b)
 }

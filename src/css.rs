@@ -1,6 +1,6 @@
 #[derive(Debug)]
 pub struct Stylesheet {
-    pub rules: Vec<rule>,
+    pub rules: Vec<Rule>,
 }
 
 #[derive(Debug)]
@@ -71,7 +71,7 @@ impl Value {
 }
 
 pub fn parse(source: String) -> Stylesheet {
-    let parser = Parser {
+    let mut parser = Parser {
         pos: 0,
         input: source,
     };
@@ -139,7 +139,7 @@ impl Parser {
                     self.consume_char();
                     selector.class.push(self.parse_identifier());
                 }
-                '*' | 'a'...'z' => {
+                '*' | 'a'..='z' => {
                     selector.tag_name = Some(self.parse_identifier());
                 }
                 _ => break,
@@ -178,7 +178,7 @@ impl Parser {
 
     fn parse_value(&mut self) -> Value {
         match self.next_char() {
-            '0'...'9' => self.parse_length(),
+            '0'..='9' => self.parse_length(),
             '#' => self.parse_color(),
             _ => Value::Keyword(self.parse_identifier()),
         }
@@ -190,7 +190,7 @@ impl Parser {
 
     fn parse_float(&mut self) -> f32 {
         self.consume_while(|c| match c {
-            '0'...'9' | '.' => true,
+            '0'..='9' | '.' => true,
             _ => false,
         })
         .parse()
@@ -205,7 +205,7 @@ impl Parser {
     }
 
     fn parse_color(&mut self) -> Value {
-        self.consume_char("#");
+        self.expect_char('#');
         Value::ColorValue(Color {
             r: self.parse_hex_pair(),
             g: self.parse_hex_pair(),

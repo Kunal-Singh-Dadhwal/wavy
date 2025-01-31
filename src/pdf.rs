@@ -1,6 +1,6 @@
 use crate::layout::{LayoutBox, Rect};
 use crate::painting::{build_display_list, DisplayCommand};
-use std::io::{self, Write};
+use std::io::{self, Seek, Write};
 
 fn px_to_pt(px: f32) -> f32 {
     px * 0.75
@@ -26,20 +26,13 @@ pub fn render<W: Write + Seek>(
 fn render_item<W: Write>(item: &DisplayCommand, output: &mut W) -> io::Result<()> {
     match *item {
         DisplayCommand::SolidColor(color, rect) => {
-            wirteln!(
+            writeln!(
                 output,
                 "{} {} {} sc {} {} {} {} re f",
-                color.r,
-                color.g,
-                color.b,
-                rect.x,
-                rect.y,
-                rect.width,
-                rect.height
+                color.r, color.g, color.b, rect.x, rect.y, rect.width, rect.height
             )
         }
     }
-    Ok(())
 }
 
 struct Pdf<'a, W: 'a + Write + Seek> {

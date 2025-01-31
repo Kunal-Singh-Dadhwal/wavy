@@ -23,24 +23,27 @@ pub struct ElementData {
 pub fn text(data: String) -> Node {
     Node {
         children: vec![],
-        node_type: NodeType::text(data),
+        node_type: NodeType::Text(data),
     }
 }
 
 pub fn element(tag: String, attrs: AttrMap, children: Vec<Node>) -> Node {
     Node {
         children,
-        node_type: NodeType::Element(ElementData { tag, attrs }),
+        node_type: NodeType::Element(ElementData {
+            tag_name: tag,
+            attributes: attrs,
+        }),
     }
 }
 
 impl ElementData {
     pub fn id(&self) -> Option<&String> {
-        self.attrs.get("id")
+        self.attributes.get("id")
     }
 
     pub fn classes(&self) -> HashSet<&str> {
-        match self.attrs.get("class") {
+        match self.attributes.get("class") {
             Some(classlist) => classlist.split(' ').collect(),
             None => HashSet::new(),
         }

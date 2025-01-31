@@ -4,10 +4,10 @@ use std::collections::HashMap;
 
 pub type PropertyMap = HashMap<String, Value>;
 
-pub struct StyledNode<'a> {
+pub struct StyleNode<'a> {
     pub node: &'a Node,
     pub specified_values: PropertyMap,
-    pub children: Vec<StyledNode<'a>>,
+    pub children: Vec<StyleNode<'a>>,
 }
 
 #[derive(PartialEq)]
@@ -17,7 +17,7 @@ pub enum Display {
     None,
 }
 
-impl<'a> StyledNode<'a> {
+impl<'a> StyleNode<'a> {
     pub fn value(&self, name: &str) -> Option<Value> {
         self.specified_values.get(name).cloned()
     }
@@ -38,8 +38,8 @@ impl<'a> StyledNode<'a> {
     }
 }
 
-pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyledNode<'a> {
-    StyledNode {
+pub fn style_tree<'a>(root: &'a Node, stylesheet: &'a Stylesheet) -> StyleNode<'a> {
+    StyleNode {
         node: root,
         specified_values: match root.node_type {
             NodeType::Element(ref elem) => specified_values(elem, stylesheet),

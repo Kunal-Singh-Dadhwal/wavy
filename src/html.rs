@@ -11,7 +11,7 @@ pub fn parse(source: String) -> dom::Node {
     if nodes.len() == 1 {
         nodes.remove(0)
     } else {
-        dome::element("html".to_string(), HashMap::new(), nodes)
+        dom::element("html".to_string(), HashMap::new(), nodes)
     }
 }
 
@@ -44,7 +44,7 @@ impl Parser {
     fn parse_element(&mut self) -> dom::Node {
         self.expect("<");
         let tag_name = self.parse_name();
-        let attr = self.parse_attributes();
+        let attrs = self.parse_attributes();
         self.expect(">");
 
         let children = self.parse_nodes();
@@ -64,7 +64,7 @@ impl Parser {
         let mut attributes = HashMap::new();
         loop {
             self.consume_whitespace();
-            if self.next_char() == ">" {
+            if self.next_char() == '>' {
                 break;
             }
             let (name, value) = self.parse_attr();
@@ -81,7 +81,7 @@ impl Parser {
 
     fn parse_attr_value(&mut self) -> String {
         let open_quote = self.consume_char();
-        assert!(open_quote == "" || open_quote == "\'");
+        assert!(open_quote == '"' || open_quote == '\'');
         let value = self.consume_while(|c| c != open_quote);
         let close_quote = self.consume_char();
         assert_eq!(open_quote, close_quote);
@@ -89,7 +89,7 @@ impl Parser {
     }
 
     fn parse_text(&mut self) -> dom::Node {
-        dom::text(self.consume_while(|c| c != "<"))
+        dom::text(self.consume_while(|c| c != '<'))
     }
 
     fn consume_whitespace(&mut self) {

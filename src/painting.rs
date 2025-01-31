@@ -11,7 +11,7 @@ pub fn paint(layout_root: &LayoutBox, bounds: Rect) -> Canvas {
     let display_list = build_display_list(layout_root);
     let mut canvas = Canvas::new(bounds.width as usize, bounds.height as usize);
     for item in display_list {
-        canvas.paint(&item);
+        canvas.paint_item(&item);
     }
 
     canvas
@@ -62,7 +62,7 @@ fn render_borders(list: &mut DisplayList, layout_box: &LayoutBox) {
         Rect {
             x: border_box.x,
             y: border_box.y,
-            width: border_width,
+            width: d.border.left,
             height: border_box.height,
         },
     ));
@@ -70,9 +70,9 @@ fn render_borders(list: &mut DisplayList, layout_box: &LayoutBox) {
     list.push(DisplayCommand::SolidColor(
         color,
         Rect {
-            x: border_box.x + border_box.width - border_width,
+            x: border_box.x + border_box.width - d.border.right,
             y: border_box.y,
-            width: border_width,
+            width: d.border.right,
             height: border_box.height,
         },
     ));
@@ -83,7 +83,7 @@ fn render_borders(list: &mut DisplayList, layout_box: &LayoutBox) {
             x: border_box.x,
             y: border_box.y,
             width: border_box.width,
-            height: border_width,
+            height: d.border.top,
         },
     ));
 
@@ -91,9 +91,9 @@ fn render_borders(list: &mut DisplayList, layout_box: &LayoutBox) {
         color,
         Rect {
             x: border_box.x,
-            y: border_box.y + border_box.height - border_width,
+            y: border_box.y + border_box.height - d.border.bottom,
             width: border_box.width,
-            height: border_width,
+            height: d.border.bottom,
         },
     ));
 }
