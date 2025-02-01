@@ -1,7 +1,7 @@
 extern crate getopts;
 extern crate image;
 
-use std::default::{self, Default};
+use std::default::Default;
 use std::fs::File;
 use std::io::{BufWriter, Read};
 
@@ -22,7 +22,7 @@ fn main() {
 
     let matches = opts.parse(std::env::args().skip(1)).unwrap();
     let str_arg = |flag: &str, default: &str| -> String {
-        matches.opt_str(flag).unwrap_or_else(default.to_string())
+        matches.opt_str(flag).unwrap_or(default.to_string())
     };
 
     let png = match &str_arg("f", "png")[..] {

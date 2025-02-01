@@ -119,7 +119,7 @@ impl Parser {
                 c => panic!("Unexpected character {} in selector list", c),
             }
         }
-        selectors.sort_by(|a, b| b.specificity().cmp(&a.specificity()));
+        selectors.sort_by_key(|s| s.specificity());
         selectors
     }
 
@@ -139,7 +139,10 @@ impl Parser {
                     self.consume_char();
                     selector.class.push(self.parse_identifier());
                 }
-                '*' | 'a'..='z' => {
+                '*' => {
+                    self.consume_char();
+                }
+                c if valid_identifier_char(c) => {
                     selector.tag_name = Some(self.parse_identifier());
                 }
                 _ => break,
@@ -149,7 +152,7 @@ impl Parser {
     }
 
     fn parse_declarations(&mut self) -> Vec<Declaration> {
-        assert_eq!(self.consume_char(), '{');
+        self.expect_char('{');
         let mut declarations = Vec::new();
         loop {
             self.consume_whitespace();
@@ -189,16 +192,13 @@ impl Parser {
     }
 
     fn parse_float(&mut self) -> f32 {
-        self.consume_while(|c| match c {
-            '0'..='9' | '.' => true,
-            _ => false,
-        })
-        .parse()
-        .unwrap()
+        self.consume_while(|c| matches!(c, '0'..='9' | '.'))
+            .parse()
+            .unwrap()
     }
 
     fn parse_unit(&mut self) -> Unit {
-        match &*self.parse_identifier().to_lowercase() {
+        match &*self.parse_identifier().to_ascii_lowercase() {
             "px" => Unit::Px,
             _ => panic!("unrecognized unit"),
         }

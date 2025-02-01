@@ -70,6 +70,7 @@ impl Parser {
             let (name, value) = self.parse_attr();
             attributes.insert(name, value);
         }
+        attributes
     }
 
     fn parse_attr(&mut self) -> (String, String) {

@@ -121,7 +121,7 @@ impl LayoutBox<'_> {
         let padding_left = style.lookup("padding-left", "padding", &zero);
         let padding_right = style.lookup("padding-right", "padding", &zero);
 
-        let total = sum(&[
+        let total = sum([
             &margin_left,
             &margin_right,
             &border_left,
